@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #F2E2CB;
+  --foreground: #2C1E18;
+  --gold-hairline: rgba(212, 160, 74, 0.4);
+  --gold-accent: #D4A04A;
+}
+
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--foreground);
+  background: #F2E2CB;
+  min-height: 100vh;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Explicit Typography Utilities */
+.font-inter, .font-sans {
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+.font-serif {
+  font-family: var(--font-cormorant), Georgia, serif !important;
+}
+
+.font-accent {
+  font-family: var(--font-italiana), var(--font-cormorant), serif !important;
+}
+
+.font-script {
+  font-family: var(--font-script), 'Great Vibes', 'Alex Brush', cursive !important;
+  font-weight: 400;
+  -webkit-text-stroke: 0.2px currentColor;
+  text-shadow: 0 0.5px 1px rgba(44, 30, 24, 0.08);
+}
+
+/* Color Utilities */
+.text-dark-brown {
+  color: #2C1E18;
+}
+
+.text-deep-burgundy {
+  color: #76252F;
+}
+
+.text-antique-gold {
+  color: #D4A04A;
+}
+
+.text-muted-sage {
+  color: #64745B;
+}
+
+/* Bespoke Luxury Wedding Stationery Classes */
+.gold-hairline-border {
+  border: 1px solid var(--gold-hairline);
+}
+
+.stationery-card {
+  background: rgba(242, 226, 203, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 30px -10px rgba(44, 30, 24, 0.06), 0 0 0 1px rgba(212, 160, 74, 0.35);
+}
+
+/* 3D Gate Classes */
+.perspective-container {
+  perspective: 1500px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.gate-left {
+  transform-origin: left center;
+}
+
+.gate-right {
+  transform-origin: right center;
+}
