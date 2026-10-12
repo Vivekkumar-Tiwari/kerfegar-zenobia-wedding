@@ -12,9 +12,8 @@
 }
 
 html {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
-
 
 body {
   color: var(--foreground);
@@ -24,7 +23,7 @@ body {
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: clip;
   margin: 0;
   padding: 0;
 }
@@ -45,13 +44,12 @@ body {
 .font-script {
   font-family: var(--font-script), 'Great Vibes', 'Alex Brush', cursive !important;
   font-weight: 400;
-  -webkit-text-stroke: 0.2px currentColor;
-  text-shadow: 0 0.5px 1px rgba(44, 30, 24, 0.08);
+  text-rendering: optimizeLegibility;
 }
 
 /* Color Utilities */
 .text-dark-brown {
-  color: #2C1E18;
+  color: #3A2312;
 }
 
 .text-deep-burgundy {
@@ -59,7 +57,7 @@ body {
 }
 
 .text-antique-gold {
-  color: #D4A04A;
+  color: #B38838;
 }
 
 .text-muted-sage {
@@ -94,48 +92,5 @@ body {
   transform-origin: right center;
 }
 
-/* Falling Rose Petals: 100% GPU-Composited Hardware Acceleration (Zero Layout Reflows) */
-@keyframes rosePetalFall {
-  0% {
-    transform: translate3d(0, -70px, 0);
-    opacity: 0;
-  }
-  6% {
-    opacity: 0.98;
-  }
-  88% {
-    opacity: 0.95;
-  }
-  100% {
-    transform: translate3d(0, calc(100vh + 120px), 0);
-    opacity: 0;
-  }
-}
-
-@keyframes rosePetalSway {
-  0%, 100% {
-    transform: translate3d(0px, 0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate3d(var(--petal-sway, 30px), 0, 0) rotate(var(--petal-rot, 220deg));
-  }
-}
-
-.rose-petal-fall {
-  position: absolute;
-  top: 0;
-  animation: rosePetalFall var(--petal-dur, 6.5s) linear infinite;
-  animation-delay: var(--petal-delay, 0s);
-  will-change: transform, opacity;
-  pointer-events: none;
-}
-
-.rose-petal-inner {
-  display: block;
-  animation: rosePetalSway calc(var(--petal-dur, 6.5s) * 0.45) ease-in-out infinite;
-  animation-delay: var(--petal-delay, 0s);
-  will-change: transform;
-  pointer-events: none;
-}
 
 
