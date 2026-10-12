@@ -214,7 +214,7 @@ export default function Home() {
               <h2 className="font-script text-[56px] xs:text-[68px] sm:text-[84px] md:text-[98px] text-[#2C1E18] font-normal tracking-wide leading-[1.1] py-0.5 select-text drop-shadow-[0_1px_1px_rgba(44,30,24,0.12)]">
                 Zenobia
               </h2>
-              <p className="font-serif italic font-bold text-[16.5px] xs:text-[18px] sm:text-[19.5px] md:text-[21px] text-[#1A0F0A] tracking-wide mt-0.5 mb-1 sm:mb-2 select-text">
+              <p className="font-serif italic font-bold text-[19.5px] xs:text-[21px] sm:text-[23px] md:text-[25px] text-[#0D0704] tracking-wide mt-1 mb-1 sm:mb-2 select-text drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.15)]">
                 (daughter of Rashmi &amp; Yazdi Wadia)
               </p>
 
@@ -225,7 +225,7 @@ export default function Home() {
               <h2 className="font-script text-[56px] xs:text-[68px] sm:text-[84px] md:text-[98px] text-[#2C1E18] font-normal tracking-wide leading-[1.1] py-0.5 select-text drop-shadow-[0_1px_1px_rgba(44,30,24,0.12)]">
                 Kerfegar
               </h2>
-              <p className="font-serif italic font-bold text-[16.5px] xs:text-[18px] sm:text-[19.5px] md:text-[21px] text-[#1A0F0A] tracking-wide mt-0.5 mb-2 sm:mb-4 select-text">
+              <p className="font-serif italic font-bold text-[19.5px] xs:text-[21px] sm:text-[23px] md:text-[25px] text-[#0D0704] tracking-wide mt-1 mb-2 sm:mb-4 select-text drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.15)]">
                 (son of Ruzeen &amp; Kersi Daruwala)
               </p>
             </motion.div>
