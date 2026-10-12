@@ -86,7 +86,8 @@ export default function Home() {
   }, []);
 
   // Hardware-accelerated ScrollTrigger transition:
-  // As Section 2 slides up from the bottom over Section 1, Section 1 gradually fades out and scales down smoothly
+  // As Section 2 slides up from the bottom over Section 1, Section 1 stays pinned in place and vanishes (opacity 1 -> 0).
+  // Built-in snap ensures that scrolling never gets stuck or messy in the middle on mobile!
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
@@ -95,14 +96,20 @@ export default function Home() {
       if (heroCardRef.current && section2Ref.current) {
         gsap.to(heroCardRef.current, {
           opacity: 0,
-          scale: 0.88,
-          ease: "none",
+          scale: 0.9,
+          ease: "power2.out",
           scrollTrigger: {
             trigger: section2Ref.current,
             start: "top bottom",
             end: "top top",
             scrub: true,
             fastScrollEnd: true,
+            snap: {
+              snapTo: [0, 1],
+              duration: { min: 0.2, max: 0.45 },
+              delay: 0.04,
+              ease: "power2.inOut",
+            },
           },
         });
       }
@@ -179,69 +186,69 @@ export default function Home() {
       <div className="relative w-full z-20 pt-[100dvh] pointer-events-none">
         <section
           ref={section2Ref}
-          className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center px-6 xs:px-8 py-16 sm:py-24 select-text bg-[#F2E2CB] selection:bg-[#B38838]/25 selection:text-[#3A2312] pointer-events-auto"
+          className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center px-5 xs:px-6 py-8 sm:py-16 md:py-20 select-text bg-[#F2E2CB] shadow-[0_-25px_50px_rgba(44,30,24,0.10)] selection:bg-[#B38838]/25 selection:text-[#1A0F0A] pointer-events-auto"
         >
           <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center text-center select-text">
 
-            {/* 1. Introductory Paragraph */}
+            {/* 1. Introductory Paragraph - Bold & Deep Dark Charcoal/Espresso for Maximum Legibility */}
             <motion.p
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="font-serif text-[17px] xs:text-[18.5px] sm:text-[20px] md:text-[22px] text-[#3A2312] font-normal leading-[1.6] tracking-[0.01em] mb-6 sm:mb-8"
+              className="font-serif font-bold text-[18px] xs:text-[19.5px] sm:text-[21.5px] md:text-[23.5px] text-[#1A0F0A] leading-[1.5] tracking-wide mb-3 sm:mb-6"
             >
               We would love for you to join us<br />
               on our most auspicious day<br />
               as we celebrate the marriage of:
             </motion.p>
 
-            {/* 2. Couple Block: Flowing calligraphy script & refined italic parentage matching stationery */}
+            {/* 2. Couple Block: Flowing calligraphy script & bold italic parentage */}
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: 18 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col items-center my-2 sm:my-3 select-text"
+              className="flex flex-col items-center my-1 sm:my-3 select-text"
             >
-              <h2 className="font-script text-[62px] xs:text-[74px] sm:text-[88px] md:text-[100px] text-[#3A2312] font-normal tracking-wide leading-[1.1] py-1 select-text">
+              <h2 className="font-script text-[56px] xs:text-[68px] sm:text-[84px] md:text-[98px] text-[#2C1E18] font-normal tracking-wide leading-[1.1] py-0.5 select-text drop-shadow-[0_1px_1px_rgba(44,30,24,0.12)]">
                 Zenobia
               </h2>
-              <p className="font-serif italic font-bold text-[16.5px] xs:text-[18px] sm:text-[19.5px] md:text-[21px] text-[#2C1E18] tracking-wide mt-1 select-text">
+              <p className="font-serif italic font-bold text-[16.5px] xs:text-[18px] sm:text-[19.5px] md:text-[21px] text-[#1A0F0A] tracking-wide mt-0.5 mb-1 sm:mb-2 select-text">
                 (daughter of Rashmi &amp; Yazdi Wadia)
               </p>
 
-              <span className="font-script text-[36px] xs:text-[42px] sm:text-[48px] text-[#B38838] leading-none my-3 sm:my-4 select-text">
+              <span className="font-script text-[32px] xs:text-[38px] sm:text-[44px] text-[#B38838] leading-none my-1 sm:my-2 select-text">
                 &amp;
               </span>
 
-              <h2 className="font-script text-[62px] xs:text-[74px] sm:text-[88px] md:text-[100px] text-[#3A2312] font-normal tracking-wide leading-[1.1] py-1 select-text">
+              <h2 className="font-script text-[56px] xs:text-[68px] sm:text-[84px] md:text-[98px] text-[#2C1E18] font-normal tracking-wide leading-[1.1] py-0.5 select-text drop-shadow-[0_1px_1px_rgba(44,30,24,0.12)]">
                 Kerfegar
               </h2>
-              <p className="font-serif italic font-bold text-[16.5px] xs:text-[18px] sm:text-[19.5px] md:text-[21px] text-[#2C1E18] tracking-wide mt-1 select-text">
+              <p className="font-serif italic font-bold text-[16.5px] xs:text-[18px] sm:text-[19.5px] md:text-[21px] text-[#1A0F0A] tracking-wide mt-0.5 mb-2 sm:mb-4 select-text">
                 (son of Ruzeen &amp; Kersi Daruwala)
               </p>
             </motion.div>
 
-            {/* 3. Blessings Paragraph */}
+            {/* 3. Blessings Paragraph - Bold & Deep Dark Charcoal/Espresso */}
             <motion.p
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.7, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
-              className="font-serif text-[17px] xs:text-[18.5px] sm:text-[20px] md:text-[22px] text-[#3A2312] font-normal leading-[1.6] tracking-[0.01em] mt-7 sm:mt-10 mb-5 sm:mb-7"
+              className="font-serif font-bold text-[18px] xs:text-[19.5px] sm:text-[21.5px] md:text-[23.5px] text-[#1A0F0A] leading-[1.5] tracking-wide mt-3 sm:mt-6 mb-2.5 sm:mb-4"
             >
               We warmly welcome your blessings<br />
               and your company.
             </motion.p>
 
-            {/* 4. Closing Toast */}
+            {/* 4. Closing Toast - Bold & Deep Dark Charcoal/Espresso */}
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.7, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="font-serif text-[17px] xs:text-[18.5px] sm:text-[20px] md:text-[22px] text-[#3A2312] font-normal tracking-[0.01em]"
+              className="font-serif font-bold text-[18px] xs:text-[19.5px] sm:text-[21.5px] md:text-[23.5px] text-[#1A0F0A] tracking-wide"
             >
               Let&apos;s raise a glass to life and love together!
             </motion.p>
