@@ -61,7 +61,7 @@ const RosePetalRain = () => {
   );
 };
 
-// Background Music with Eager Mobile Preloading & Instant Unlock
+// Background Music with Eager Mobile Preloading & Locked Instant Unlock
 const BackgroundMusic = ({ playTrigger }: { playTrigger: boolean }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -75,9 +75,12 @@ const BackgroundMusic = ({ playTrigger }: { playTrigger: boolean }) => {
       audio.load();
     } catch {}
 
+    let isAttempting = false;
     let hasStarted = false;
+
     const playAudio = () => {
-      if (hasStarted || !audio) return;
+      if (isAttempting || hasStarted || !audio) return;
+      isAttempting = true;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise
@@ -85,28 +88,25 @@ const BackgroundMusic = ({ playTrigger }: { playTrigger: boolean }) => {
             hasStarted = true;
             removeListeners();
           })
-          .catch(() => {});
+          .catch(() => {
+            isAttempting = false;
+          });
       }
     };
 
     const removeListeners = () => {
       window.removeEventListener("pointerdown", playAudio);
       window.removeEventListener("touchstart", playAudio);
-      window.removeEventListener("touchmove", playAudio);
-      window.removeEventListener("scroll", playAudio);
       window.removeEventListener("click", playAudio);
-      window.removeEventListener("wheel", playAudio);
       window.removeEventListener("keydown", playAudio);
     };
 
     if (playTrigger) playAudio();
 
+    // Listen only to clean user taps (NO touchmove or scroll to avoid main-thread event flooding)
     window.addEventListener("pointerdown", playAudio, { passive: true });
     window.addEventListener("touchstart", playAudio, { passive: true });
-    window.addEventListener("touchmove", playAudio, { passive: true });
-    window.addEventListener("scroll", playAudio, { passive: true });
     window.addEventListener("click", playAudio, { passive: true });
-    window.addEventListener("wheel", playAudio, { passive: true });
     window.addEventListener("keydown", playAudio, { passive: true });
 
     return () => {
@@ -131,7 +131,6 @@ export default function Home() {
   const heroRef = useRef<HTMLElement | null>(null);
   const heroCardRef = useRef<HTMLDivElement | null>(null);
   const section2Ref = useRef<HTMLElement | null>(null);
-  const section2ContentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const img = new Image();
@@ -141,50 +140,25 @@ export default function Home() {
     }
   }, []);
 
-  // Buttery-smooth hardware-accelerated ScrollTrigger transition between Section 1 and Section 2
-  // Uses native sticky stacking for Section 1 so mobile touch momentum scrolling never gets stuck or janky
+  // Hardware-accelerated ScrollTrigger transition: Section 1 dissolves & scales down smoothly on scroll
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // 1. Fade out and scale down Section 1 as Section 2 slides over it
       if (heroRef.current && heroCardRef.current) {
         gsap.to(heroCardRef.current, {
           opacity: 0,
-          scale: 0.88,
+          scale: 0.9,
           ease: "none",
           scrollTrigger: {
             trigger: heroRef.current,
             start: "top top",
             end: "bottom top",
-            scrub: 0.3,
+            scrub: true,
+            fastScrollEnd: true,
           },
         });
-      }
-
-      // 2. Section 2 content smoothly slides up and fades in over Section 1
-      if (section2Ref.current && section2ContentRef.current) {
-        gsap.fromTo(
-          section2ContentRef.current,
-          {
-            opacity: 0.35,
-            y: 60,
-            scale: 0.96,
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section2Ref.current,
-              start: "top 90%",
-              end: "top 25%",
-              scrub: 0.3,
-            },
-          }
-        );
       }
     });
 
@@ -200,7 +174,7 @@ export default function Home() {
         {/* SECTION 1: Couple Portrait Frame (Sticky top-0 for 120fps native GPU scrolling on mobile) */}
         <section 
           ref={heroRef}
-          className="sticky top-0 w-full h-[100dvh] flex flex-col items-center justify-center p-0 sm:p-4 relative select-none z-10"
+          className="sticky top-0 w-full h-[100dvh] flex flex-col items-center justify-center p-0 sm:p-4 select-none z-10"
         >
           <div 
             ref={heroCardRef}
@@ -260,21 +234,18 @@ export default function Home() {
           </div>
         </section>
 
-        {/* SECTION 2: Clean Luxury Wedding Invitation (Matching Reference Image on #F2E2CB, slides up over Section 1) */}
+        {/* SECTION 2: Clean Luxury Wedding Invitation (Native smooth scrolling over Section 1) */}
         <section 
           ref={section2Ref}
-          className="w-full min-h-[100dvh] flex flex-col items-center justify-center px-5 xs:px-6 py-12 sm:py-20 relative select-none z-20 bg-[#F2E2CB]"
+          className="w-full min-h-[100dvh] flex flex-col items-center justify-center px-5 xs:px-6 py-14 sm:py-20 relative select-none z-20 bg-[#F2E2CB]"
         >
-          <div 
-            ref={section2ContentRef}
-            className="w-full max-w-xl mx-auto flex flex-col items-center justify-center text-center"
-          >
+          <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center text-center">
             
-            {/* 1. Introductory Paragraph (Framer Motion entrance) */}
+            {/* 1. Introductory Paragraph (Framer Motion entrance - once: true prevents vibration) */}
             <motion.p 
-              initial={{ opacity: 0, y: 22 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif text-[17px] xs:text-[18.5px] sm:text-[21px] md:text-[23px] text-[#1A0F0A] font-semibold leading-[1.5] tracking-wide mb-5 sm:mb-8"
             >
@@ -285,9 +256,9 @@ export default function Home() {
 
             {/* 2. Couple Block: Prominent script typography with smooth Framer Motion reveal */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 22 }}
+              initial={{ opacity: 0, scale: 0.96, y: 20 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
               className="flex flex-col items-center my-2 sm:my-4 gap-1.5 sm:gap-2.5"
             >
@@ -312,9 +283,9 @@ export default function Home() {
 
             {/* 3. Blessings Paragraph (Framer Motion entrance) */}
             <motion.p 
-              initial={{ opacity: 0, y: 22 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.8, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif text-[17px] xs:text-[18.5px] sm:text-[21px] md:text-[23px] text-[#1A0F0A] font-semibold leading-[1.5] tracking-wide mt-5 sm:mt-8 mb-4 sm:mb-6"
             >
@@ -324,9 +295,9 @@ export default function Home() {
 
             {/* 4. Closing Toast (Framer Motion entrance) */}
             <motion.p 
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
               className="font-serif italic text-[15.5px] xs:text-[17px] sm:text-[18.5px] md:text-[20px] text-[#1A0F0A] font-semibold tracking-wide"
             >

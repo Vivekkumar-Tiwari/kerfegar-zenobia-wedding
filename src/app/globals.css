@@ -94,10 +94,10 @@ body {
   transform-origin: right center;
 }
 
-/* Falling Rose Petals: Container-Relative Cascading & Realistic Tumbling */
+/* Falling Rose Petals: 100% GPU-Composited Hardware Acceleration (Zero Layout Reflows) */
 @keyframes rosePetalFall {
   0% {
-    top: -12%;
+    transform: translate3d(0, -70px, 0);
     opacity: 0;
   }
   6% {
@@ -107,25 +107,26 @@ body {
     opacity: 0.95;
   }
   100% {
-    top: 108%;
+    transform: translate3d(0, calc(100vh + 120px), 0);
     opacity: 0;
   }
 }
 
 @keyframes rosePetalSway {
   0%, 100% {
-    transform: translateX(0px) rotate(0deg);
+    transform: translate3d(0px, 0, 0) rotate(0deg);
   }
   50% {
-    transform: translateX(var(--petal-sway, 30px)) rotate(var(--petal-rot, 220deg));
+    transform: translate3d(var(--petal-sway, 30px), 0, 0) rotate(var(--petal-rot, 220deg));
   }
 }
 
 .rose-petal-fall {
   position: absolute;
+  top: 0;
   animation: rosePetalFall var(--petal-dur, 6.5s) linear infinite;
   animation-delay: var(--petal-delay, 0s);
-  will-change: top, opacity;
+  will-change: transform, opacity;
   pointer-events: none;
 }
 
@@ -136,4 +137,5 @@ body {
   will-change: transform;
   pointer-events: none;
 }
+
 
