@@ -13,8 +13,8 @@
 
 html {
   overflow-x: hidden;
-  scroll-behavior: smooth;
 }
+
 
 body {
   color: var(--foreground);

@@ -61,7 +61,7 @@ const RosePetalRain = () => {
   );
 };
 
-// Background Music
+// Background Music with Eager Mobile Preloading & Instant Unlock
 const BackgroundMusic = ({ playTrigger }: { playTrigger: boolean }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -70,28 +70,44 @@ const BackgroundMusic = ({ playTrigger }: { playTrigger: boolean }) => {
     if (!audio) return;
     audio.volume = 0.55;
 
+    // Eagerly pre-buffer audio data immediately on mount
+    try {
+      audio.load();
+    } catch {}
+
     let hasStarted = false;
     const playAudio = () => {
       if (hasStarted || !audio) return;
-      audio.play().then(() => {
-        hasStarted = true;
-        removeListeners();
-      }).catch(() => {});
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            hasStarted = true;
+            removeListeners();
+          })
+          .catch(() => {});
+      }
     };
 
     const removeListeners = () => {
       window.removeEventListener("pointerdown", playAudio);
       window.removeEventListener("touchstart", playAudio);
+      window.removeEventListener("touchmove", playAudio);
       window.removeEventListener("scroll", playAudio);
       window.removeEventListener("click", playAudio);
+      window.removeEventListener("wheel", playAudio);
+      window.removeEventListener("keydown", playAudio);
     };
 
     if (playTrigger) playAudio();
 
     window.addEventListener("pointerdown", playAudio, { passive: true });
     window.addEventListener("touchstart", playAudio, { passive: true });
+    window.addEventListener("touchmove", playAudio, { passive: true });
     window.addEventListener("scroll", playAudio, { passive: true });
     window.addEventListener("click", playAudio, { passive: true });
+    window.addEventListener("wheel", playAudio, { passive: true });
+    window.addEventListener("keydown", playAudio, { passive: true });
 
     return () => {
       removeListeners();
@@ -99,7 +115,15 @@ const BackgroundMusic = ({ playTrigger }: { playTrigger: boolean }) => {
     };
   }, [playTrigger]);
 
-  return <audio ref={audioRef} src="/assets/music/audio-01.mp3" loop preload="auto" />;
+  return (
+    <audio 
+      ref={audioRef} 
+      src="/assets/music/audio-01.mp3" 
+      loop 
+      preload="auto" 
+      playsInline 
+    />
+  );
 };
 
 export default function Home() {
@@ -117,28 +141,25 @@ export default function Home() {
     }
   }, []);
 
-  // GSAP ScrollTrigger Cinematic Transition between Section 1 and Section 2
-  // Pinned Section 1 fades out & scales down while Section 2 slides smoothly up from the bottom
+  // Buttery-smooth hardware-accelerated ScrollTrigger transition between Section 1 and Section 2
+  // Uses native sticky stacking for Section 1 so mobile touch momentum scrolling never gets stuck or janky
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
-      // 1. Pin Section 1 in place while user scrolls down, fading out and scaling down heroCardRef
+      // 1. Fade out and scale down Section 1 as Section 2 slides over it
       if (heroRef.current && heroCardRef.current) {
-        ScrollTrigger.create({
-          trigger: heroRef.current,
-          start: "top top",
-          end: "+=100%",
-          pin: true,
-          pinSpacing: false,
-          anticipatePin: 1,
-          scrub: 1,
-          animation: gsap.to(heroCardRef.current, {
-            opacity: 0,
-            scale: 0.88,
-            ease: "none",
-          }),
+        gsap.to(heroCardRef.current, {
+          opacity: 0,
+          scale: 0.88,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: 0.3,
+          },
         });
       }
 
@@ -147,9 +168,9 @@ export default function Home() {
         gsap.fromTo(
           section2ContentRef.current,
           {
-            opacity: 0.25,
-            y: 90,
-            scale: 0.94,
+            opacity: 0.35,
+            y: 60,
+            scale: 0.96,
           },
           {
             opacity: 1,
@@ -158,9 +179,9 @@ export default function Home() {
             ease: "none",
             scrollTrigger: {
               trigger: section2Ref.current,
-              start: "top 95%",
-              end: "top 12%",
-              scrub: 1,
+              start: "top 90%",
+              end: "top 25%",
+              scrub: 0.3,
             },
           }
         );
@@ -176,10 +197,10 @@ export default function Home() {
 
       <div className="w-full bg-[#F2E2CB] flex flex-col items-center">
         
-        {/* SECTION 1: Couple Portrait Frame (Pinned during transition) */}
+        {/* SECTION 1: Couple Portrait Frame (Sticky top-0 for 120fps native GPU scrolling on mobile) */}
         <section 
           ref={heroRef}
-          className="w-full min-h-[100dvh] flex flex-col items-center justify-center p-0 sm:p-4 relative select-none z-10"
+          className="sticky top-0 w-full h-[100dvh] flex flex-col items-center justify-center p-0 sm:p-4 relative select-none z-10"
         >
           <div 
             ref={heroCardRef}
@@ -191,7 +212,7 @@ export default function Home() {
               maxWidth: "100%",
               margin: "0 auto",
             }}
-            className="relative overflow-hidden flex items-center justify-center select-none"
+            className="relative overflow-hidden flex items-center justify-center select-none will-change-transform"
           >
             {/* Background Palace Border Frame */}
             <motion.img
