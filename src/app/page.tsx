@@ -76,6 +76,8 @@ export default function Home() {
   const heroRef = useRef<HTMLElement | null>(null);
   const heroCardRef = useRef<HTMLDivElement | null>(null);
   const section2Ref = useRef<HTMLElement | null>(null);
+  const section2ContentRef = useRef<HTMLDivElement | null>(null);
+  const section3Ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const img = new Image();
@@ -83,16 +85,19 @@ export default function Home() {
     if (img.complete) {
       setCoupleLoaded(true);
     }
+    const img2 = new Image();
+    img2.src = "/assets/images/when-where.webp";
   }, []);
 
-  // Hardware-accelerated ScrollTrigger transition:
-  // As Section 2 slides up from the bottom over Section 1, Section 1 stays pinned in place and vanishes (opacity 1 -> 0).
-  // Built-in snap ensures that scrolling never gets stuck or messy in the middle on mobile!
+  // Hardware-accelerated ScrollTrigger transitions:
+  // 1. As Section 2 slides up over Section 1, Section 1 stays pinned and vanishes (opacity 1 -> 0, scale 0.9).
+  // 2. As Section 3 slides up over Section 2, Section 2 stays pinned and vanishes (opacity 1 -> 0, scale 0.9).
   useEffect(() => {
     if (typeof window === "undefined") return;
     gsap.registerPlugin(ScrollTrigger);
 
     const ctx = gsap.context(() => {
+      // Transition from Section 1 -> Section 2
       if (heroCardRef.current && section2Ref.current) {
         gsap.to(heroCardRef.current, {
           opacity: 0,
@@ -100,6 +105,28 @@ export default function Home() {
           ease: "power2.out",
           scrollTrigger: {
             trigger: section2Ref.current,
+            start: "top bottom",
+            end: "top top",
+            scrub: true,
+            fastScrollEnd: true,
+            snap: {
+              snapTo: [0, 1],
+              duration: { min: 0.2, max: 0.45 },
+              delay: 0.04,
+              ease: "power2.inOut",
+            },
+          },
+        });
+      }
+
+      // Transition from Section 2 -> Section 3
+      if (section2ContentRef.current && section3Ref.current) {
+        gsap.to(section2ContentRef.current, {
+          opacity: 0,
+          scale: 0.9,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: section3Ref.current,
             start: "top bottom",
             end: "top top",
             scrub: true,
@@ -122,7 +149,7 @@ export default function Home() {
     <main className="relative w-full bg-[#F2E2CB] text-[#3A2312] selection:bg-[#B38838]/20">
       <BackgroundMusic playTrigger={coupleLoaded} />
 
-      {/* SECTION 1: Fixed at the top. It NEVER moves upward! It stays in place and vanishes (opacity 1 -> 0) as user scrolls */}
+      {/* SECTION 1: Fixed at the top. It stays in place and vanishes as Section 2 scrolls up */}
       <section
         ref={heroRef}
         className="fixed top-0 left-0 w-full h-[100dvh] flex flex-col items-center justify-center p-0 sm:p-4 select-none z-10 overflow-hidden pointer-events-none"
@@ -182,15 +209,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SCROLL SPACER & SECTION 2: Section 2 starts at 100dvh and slides up over the fixed Section 1 */}
+      {/* SCROLL CONTAINER & SECTIONS 2 + 3 */}
       <div className="relative w-full z-20 pt-[100dvh] pointer-events-none">
+        
+        {/* SECTION 2: Sticks in place at top:0 and vanishes as Section 3 slides up over it */}
         <section
           ref={section2Ref}
-          className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center px-5 xs:px-6 py-8 sm:py-16 md:py-20 select-text bg-[#F2E2CB] shadow-[0_-25px_50px_rgba(44,30,24,0.10)] selection:bg-[#B38838]/25 selection:text-[#1A0F0A] pointer-events-auto"
+          className="sticky top-0 w-full min-h-[100dvh] flex flex-col items-center justify-center px-5 xs:px-6 py-8 sm:py-16 md:py-20 select-text bg-[#F2E2CB] shadow-[0_-25px_50px_rgba(44,30,24,0.10)] selection:bg-[#B38838]/25 selection:text-[#1A0F0A] pointer-events-auto z-20"
         >
-          <div className="w-full max-w-xl mx-auto flex flex-col items-center justify-center text-center select-text">
-
-            {/* 1. Introductory Paragraph - Bold & Deep Dark Charcoal/Espresso for Maximum Legibility */}
+          <div 
+            ref={section2ContentRef}
+            className="w-full max-w-xl mx-auto flex flex-col items-center justify-center text-center select-text will-change-transform"
+          >
+            {/* 1. Introductory Paragraph */}
             <motion.p
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -230,7 +261,7 @@ export default function Home() {
               </p>
             </motion.div>
 
-            {/* 3. Blessings Paragraph - Bold & Deep Dark Charcoal/Espresso */}
+            {/* 3. Blessings Paragraph */}
             <motion.p
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -242,7 +273,7 @@ export default function Home() {
               and your company.
             </motion.p>
 
-            {/* 4. Closing Toast - Bold & Deep Dark Charcoal/Espresso */}
+            {/* 4. Closing Toast */}
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -252,6 +283,122 @@ export default function Home() {
             >
               Let&apos;s raise a glass to life and love together!
             </motion.p>
+          </div>
+        </section>
+
+        {/* SECTION 3: When & Where Section (Slides smoothly up over Section 2) */}
+        <section
+          ref={section3Ref}
+          className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center p-0 sm:p-4 select-none bg-[#F2E2CB] shadow-[0_-25px_50px_rgba(44,30,24,0.10)] selection:bg-[#B38838]/25 selection:text-[#1A0F0A] pointer-events-auto z-30"
+        >
+          <div
+            style={{
+              aspectRatio: "2/3",
+              width: "min(100vw, calc(96dvh * 2 / 3))",
+              height: "auto",
+              maxHeight: "96dvh",
+              maxWidth: "100%",
+              margin: "0 auto",
+            }}
+            className="relative flex items-center justify-center select-none will-change-transform"
+          >
+            {/* Background Frame Image */}
+            <motion.img
+              initial={{ opacity: 0, scale: 1.04 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              src="/assets/images/when-where.webp"
+              alt="When & Where Illustration"
+              className="w-full h-full object-contain pointer-events-none select-none block"
+            />
+
+            {/* Content Container (Shifted down safely below the garland/shrine) */}
+            <div
+              style={{
+                position: "absolute",
+                top: "61.5%",
+                bottom: "9%",
+                left: "10%",
+                right: "10%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                zIndex: 20,
+              }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ duration: 0.8, ease: "linear" }}
+                className="flex flex-col items-center justify-center w-full"
+              >
+                {/* Heading: When & Where in Script Font (Shifted down 1.5px) */}
+                <h2
+                  style={{ transform: "translateY(1.5px)" }}
+                  className="font-script text-3xl sm:text-4xl md:text-5xl text-[#2C1E18] tracking-wide leading-none mb-1 select-text"
+                >
+                  When &amp; Where
+                </h2>
+
+                {/* Subtitle in Inter: Enlarged, High-Contrast Burgundy for Crisp Visibility */}
+                <p className="font-inter text-[10px] xs:text-[11px] sm:text-xs tracking-[0.24em] uppercase text-[#76252F] font-bold mb-2.5 sm:mb-3 drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] select-text">
+                  CEREMONY &amp; CELEBRATION
+                </p>
+
+                {/* Schedule Details as Requested */}
+                <div className="space-y-1 sm:space-y-1.5 mb-3 sm:mb-4 text-center select-text">
+                  {/* Join us at 6:30 PM (Shifted up 1px) */}
+                  <p
+                    style={{ transform: "translateY(-1px)" }}
+                    className="font-script text-xl sm:text-2xl text-[#76252F] font-medium leading-tight"
+                  >
+                    Join us at 6:30 PM
+                  </p>
+                  <p className="font-inter text-[11px] sm:text-xs text-[#2C1E18]/90 font-medium leading-snug">
+                    Drinks at Dabmeher
+                  </p>
+                  <p className="font-inter text-[11px] sm:text-xs text-[#2C1E18]/90 font-medium leading-snug">
+                    Dinner at Dum Pukht Restaurant
+                  </p>
+                </div>
+
+                {/* Simple Location Text Button */}
+                <motion.a
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  href="https://www.google.com/maps/search/?api=1&query=Dum+Pukht+Restaurant+Toronto"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "38px",
+                    padding: "0 28px",
+                    backgroundColor: "#76252F",
+                    color: "#FFFFFF",
+                    borderRadius: "999px",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    textDecoration: "none",
+                    boxShadow: "0 3px 10px rgba(118, 37, 47, 0.35)",
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "all 0.25s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#5E1219")}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#76252F")}
+                >
+                  LOCATION
+                </motion.a>
+              </motion.div>
+            </div>
           </div>
         </section>
       </div>
